@@ -77,14 +77,14 @@ namespace OpenCl.DotNetCore
         /// </summary>
         /// <param name="data">The byte array that is to be converted.</param>
         /// <returns>Returns the converted data.</returns>
-        public static long ToInt64(byte[] data) => BitConverter.ToInt32(data, 0);
+        public static long ToInt64(byte[] data) => BitConverter.ToInt64(data, 0);
 
         /// <summary>
         /// Converts a byte array to a 64 bit unsigned integer value.
         /// </summary>
         /// <param name="data">The byte array that is to be converted.</param>
         /// <returns>Returns the converted data.</returns>
-        public static ulong ToUInt64(byte[] data) => BitConverter.ToUInt32(data, 0);
+        public static ulong ToUInt64(byte[] data) => BitConverter.ToUInt64(data, 0);
 
         /// <summary>
         /// Converts a byte array to a string value.
