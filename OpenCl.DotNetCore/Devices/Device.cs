@@ -104,6 +104,42 @@ namespace OpenCl.DotNetCore.Devices
         }
 
         /// <summary>
+        /// Contains the local memory size of the device.
+        /// </summary>
+        private Nullable<long> localMemorySize;
+
+        /// <summary>
+        /// Gets the local memory size of the device.
+        /// </summary>
+        public long LocalMemorySize
+        {
+            get
+            {
+                if (!this.localMemorySize.HasValue)
+                    this.localMemorySize = (long)this.GetDeviceInformation<ulong>(DeviceInformation.LocalMemorySize);
+                return this.localMemorySize.Value;
+            }
+        }
+
+        /// <summary>
+        /// Contains the local memory size of the device.
+        /// </summary>
+        private Nullable<int> maximumComputeUnits;
+
+        /// <summary>
+        /// Gets the local memory size of the device.
+        /// </summary>
+        public int MaximumComputeUnits
+        {
+            get
+            {
+                if (!this.maximumComputeUnits.HasValue)
+                    this.maximumComputeUnits = (int)this.GetDeviceInformation<uint>(DeviceInformation.MaximumComputeUnits);
+                return this.maximumComputeUnits.Value;
+            }
+        }
+
+        /// <summary>
         /// Contains the number of bits, that the device can use to address its memory.
         /// </summary>
         private Nullable<int> addressBits;
