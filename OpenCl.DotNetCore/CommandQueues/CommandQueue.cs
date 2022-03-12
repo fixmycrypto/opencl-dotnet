@@ -217,7 +217,9 @@ namespace OpenCl.DotNetCore.CommandQueues
         {
             // Creates the new command queue for the specified context and device
             Result result;
-            IntPtr commandQueuePointer = CommandQueuesNativeApi.CreateCommandQueueWithProperties(context.Handle, device.Handle, IntPtr.Zero, out result);
+#pragma warning disable CS0618
+            IntPtr commandQueuePointer = CommandQueuesNativeApi.CreateCommandQueue(context.Handle, device.Handle, 0, out result);
+#pragma warning restore CS0618
 
             // Checks if the command queue creation was successful, if not, then an exception is thrown
             if (result != Result.Success)
