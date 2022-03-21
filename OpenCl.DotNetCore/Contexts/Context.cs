@@ -87,7 +87,7 @@ namespace OpenCl.DotNetCore.Contexts
         /// <param name="sources">The source codes from which the program is to be created.</param>
         /// <exception cref="OpenClException">If the program could not be created, compiled, or linked, then an <see cref="OpenClException"/> is thrown.</exception>
         /// <returns>Returns the created program.</returns>
-        public Task<Program> CreateAndBuildProgramFromStringAsync(IEnumerable<string> sources)
+        public Task<Program> CreateAndBuildProgramFromStringAsync(IEnumerable<string> sources, string options = null)
         {
             // Creates a new task completion source, which is used to signal when the build has completed
             TaskCompletionSource<Program> taskCompletionSource = new TaskCompletionSource<Program>();
@@ -103,7 +103,7 @@ namespace OpenCl.DotNetCore.Contexts
                 throw new OpenClException("The program could not be created.", result);
 
             // Builds (compiles and links) the program and checks if it was successful, if not, then an exception is thrown
-            result = ProgramsNativeApi.BuildProgram(programPointer, 0, null, null, Marshal.GetFunctionPointerForDelegate(new BuildProgramCallback((builtProgramPointer, userData) =>
+            result = ProgramsNativeApi.BuildProgram(programPointer, 0, null, options, Marshal.GetFunctionPointerForDelegate(new BuildProgramCallback((builtProgramPointer, userData) =>
             {
                 // Tries to validate the build, if not successful, then an exception is thrown
                 try
@@ -157,7 +157,7 @@ namespace OpenCl.DotNetCore.Contexts
         /// <param name="sources">The source codes from which the program is to be created.</param>
         /// <exception cref="OpenClException">If the program could not be created, compiled, or linked, then an <see cref="OpenClException"/> is thrown.</exception>
         /// <returns>Returns the created program.</returns>
-        public Program CreateAndBuildProgramFromString(IEnumerable<string> sources)
+        public Program CreateAndBuildProgramFromString(IEnumerable<string> sources, string options = null)
         {
             // Loads the program from the specified source string
             Result result;
@@ -170,7 +170,7 @@ namespace OpenCl.DotNetCore.Contexts
                 throw new OpenClException("The program could not be created.", result);
 
             // Builds (compiles and links) the program and checks if it was successful, if not, then an exception is thrown
-            result = ProgramsNativeApi.BuildProgram(programPointer, 0, null, null, IntPtr.Zero, IntPtr.Zero);
+            result = ProgramsNativeApi.BuildProgram(programPointer, 0, null, options, IntPtr.Zero, IntPtr.Zero);
             if (result != Result.Success)
             {
                 // Cycles over all devices and retrieves the build log for each one, so that the errors that occurred can be added to the exception message (if any error occur during the retrieval, the exception is thrown without the log)
@@ -204,7 +204,7 @@ namespace OpenCl.DotNetCore.Contexts
         /// <param name="source">The source code from which the program is to be created.</param>
         /// <exception cref="OpenClException">If the program could not be created, compiled, or linked, then an <see cref="OpenClException"/> is thrown.</exception>
         /// <returns>Returns the created program.</returns>
-        public Task<Program> CreateAndBuildProgramFromStringAsync(string source) => this.CreateAndBuildProgramFromStringAsync(new List<string> { source });
+        public Task<Program> CreateAndBuildProgramFromStringAsync(string source, string options = null) => this.CreateAndBuildProgramFromStringAsync(new List<string> { source }, options);
 
         /// <summary>
         /// Creates a program from the provided source code. The program is created, compiled, and linked.
@@ -212,7 +212,7 @@ namespace OpenCl.DotNetCore.Contexts
         /// <param name="source">The source code from which the program is to be created.</param>
         /// <exception cref="OpenClException">If the program could not be created, compiled, or linked, then an <see cref="OpenClException"/> is thrown.</exception>
         /// <returns>Returns the created program.</returns>
-        public Program CreateAndBuildProgramFromString(string source) => this.CreateAndBuildProgramFromString(new List<string> { source });
+        public Program CreateAndBuildProgramFromString(string source, string options = null) => this.CreateAndBuildProgramFromString(new List<string> { source }, options);
 
         /// <summary>
         /// Creates a program from the provided source streams asynchronously. The program is created, compiled, and linked.
@@ -220,7 +220,7 @@ namespace OpenCl.DotNetCore.Contexts
         /// <param name="streams">The source streams from which the program is to be created.</param>
         /// <exception cref="OpenClException">If the program could not be created, compiled, or linked, then an <see cref="OpenClException"/> is thrown.</exception>
         /// <returns>Returns the created program.</returns>
-        public async Task<Program> CreateAndBuildProgramFromStreamAsync(IEnumerable<Stream> streams)
+        public async Task<Program> CreateAndBuildProgramFromStreamAsync(IEnumerable<Stream> streams, string options = null)
         {
             // Uses a stream reader to read the all streams
             List<string> sourceList = new List<string>();
@@ -231,7 +231,7 @@ namespace OpenCl.DotNetCore.Contexts
             }
 
             // Compiles the loaded strings
-            return await this.CreateAndBuildProgramFromStringAsync(sourceList);
+            return await this.CreateAndBuildProgramFromStringAsync(sourceList, options);
         }
 
         /// <summary>
@@ -240,7 +240,7 @@ namespace OpenCl.DotNetCore.Contexts
         /// <param name="streams">The source streams from which the program is to be created.</param>
         /// <exception cref="OpenClException">If the program could not be created, compiled, or linked, then an <see cref="OpenClException"/> is thrown.</exception>
         /// <returns>Returns the created program.</returns>
-        public Program CreateAndBuildProgramFromStream(IEnumerable<Stream> streams)
+        public Program CreateAndBuildProgramFromStream(IEnumerable<Stream> streams, string options = null)
         {
             // Uses a stream reader to read the all streams
             List<string> sourceList = new List<string>();
@@ -251,7 +251,7 @@ namespace OpenCl.DotNetCore.Contexts
             }
 
             // Compiles the loaded strings
-            return this.CreateAndBuildProgramFromString(sourceList);
+            return this.CreateAndBuildProgramFromString(sourceList, options);
         }
 
         /// <summary>
@@ -260,7 +260,7 @@ namespace OpenCl.DotNetCore.Contexts
         /// <param name="stream">The source stream from which the program is to be created.</param>
         /// <exception cref="OpenClException">If the program could not be created, compiled, or linked, then an <see cref="OpenClException"/> is thrown.</exception>
         /// <returns>Returns the created program.</returns>
-        public Task<Program> CreateAndBuildProgramFromStreamAsync(Stream stream) => this.CreateAndBuildProgramFromStreamAsync(new List<Stream> { stream });
+        public Task<Program> CreateAndBuildProgramFromStreamAsync(Stream stream, string options = null) => this.CreateAndBuildProgramFromStreamAsync(new List<Stream> { stream }, options);
 
         /// <summary>
         /// Creates a program from the provided source stream. The program is created, compiled, and linked.
@@ -268,7 +268,7 @@ namespace OpenCl.DotNetCore.Contexts
         /// <param name="stream">The source stream from which the program is to be created.</param>
         /// <exception cref="OpenClException">If the program could not be created, compiled, or linked, then an <see cref="OpenClException"/> is thrown.</exception>
         /// <returns>Returns the created program.</returns>
-        public Program CreateAndBuildProgramFromStream(Stream stream) => this.CreateAndBuildProgramFromStream(new List<Stream> { stream });
+        public Program CreateAndBuildProgramFromStream(Stream stream, string options = null) => this.CreateAndBuildProgramFromStream(new List<Stream> { stream }, options);
 
         /// <summary>
         /// Creates a program from the provided source files asynchronously. The program is created, compiled, and linked.
