@@ -296,13 +296,15 @@ namespace OpenCl.DotNetCore.Contexts
         /// <param name="fileNames">The source files from which the program is to be created.</param>
         /// <exception cref="OpenClException">If the program could not be created, compiled, or linked, then an <see cref="OpenClException"/> is thrown.</exception>
         /// <returns>Returns the created program.</returns>
-        public Program CreateAndBuildProgramFromFile(IEnumerable<string> fileNames)
+        public Program CreateAndBuildProgramFromFile(IEnumerable<string> fileNames, string options = null)
         {
             // Loads all the source code files and reads them in
             List<string> sourceList = fileNames.Select(fileName => File.ReadAllText(fileName)).ToList();
 
+            string source = String.Join("\n", sourceList);
+
             // Compiles and returnes the program
-            return this.CreateAndBuildProgramFromString(sourceList);
+            return this.CreateAndBuildProgramFromString(source, options);
         }
 
         /// <summary>
