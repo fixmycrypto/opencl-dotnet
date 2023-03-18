@@ -142,6 +142,42 @@ namespace OpenCl.DotNetCore.CommandQueues
         }
 
         /// <summary>
+        /// Reads the specified memory object associated with this command queue.
+        /// </summary>
+        /// <param name="memoryObject">The memory object that is to be read.</param>
+        /// <param name="outputSize">The number of array elements that are to be returned.</param>
+        /// <returns>Returns the pointer to the memory object.</param>
+        public IntPtr EnqueueReadPointer(MemoryObject memoryObject, int outputSize)
+        {
+            // Tries to read the memory object
+            IntPtr resultValuePointer = IntPtr.Zero;
+            try
+            {
+                // Allocates enough memory for the result value
+                resultValuePointer = Marshal.AllocHGlobal(outputSize);
+
+                // Reads the memory object, by enqueuing the read operation to the command queue
+                IntPtr waitEventPointer;
+                Result result = EnqueuedCommandsNativeApi.EnqueueReadBuffer(this.Handle, memoryObject.Handle, 1, UIntPtr.Zero, new UIntPtr((uint)outputSize), resultValuePointer, 0, null, out waitEventPointer);
+                
+                // Checks if the read operation was queued successfuly, if not, an exception is thrown
+                if (result != Result.Success)
+                    throw new OpenClException("The memory object could not be read.", result);
+
+                // Returns the content of the memory object
+                return resultValuePointer;
+            }
+            catch (Exception)
+            {
+                // Finally the allocated memory has to be freed
+                if (resultValuePointer != IntPtr.Zero)
+                    Marshal.FreeHGlobal(resultValuePointer);
+
+                throw;
+            }
+        }
+
+        /// <summary>
         /// Enqueues a n-dimensional kernel to the command queue, which is executed asynchronously.
         /// </summary>
         /// <param name="kernel">The kernel that is to be enqueued.</param>
